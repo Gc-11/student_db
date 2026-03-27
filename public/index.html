@@ -110,7 +110,7 @@ button:hover {
 
   </div>
 <script>
- const API = "/api/students";
+  const API = "/api/students";
 
   let editId = null; // track editing student
 
@@ -118,6 +118,8 @@ button:hover {
   async function loadStudents() {
     const res = await fetch(API);
     const data = await res.json();
+
+    console.log("DATA:", data); 
 
     const list = document.getElementById("studentsList");
     list.innerHTML = "";
