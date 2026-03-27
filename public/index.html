@@ -61,36 +61,21 @@
       margin: 10px 0;
       border-radius: 10px;
     }
-    button {
-  margin-top: 8px;
-}
 
-button:hover {
-  transform: scale(1.05);
-}
+    button { margin-top: 8px; }
+    button:hover { transform: scale(1.05); }
 
-.card button {
-  background: #ff4d4d;
-}
+    .card button { margin: 5px; }
 
-.card button:hover {
-  background: #cc0000;
-}
-.card button {
-  margin: 5px;
-}
+    .card button:nth-child(4) {
+      background: #ffaa00;
+    }
 
-.card button:nth-child(4) {
-  background: #ffaa00; /* edit */
-}
+    .card button:nth-child(5) {
+      background: #ff4d4d;
+    }
 
-.card button:nth-child(5) {
-  background: #ff4d4d; /* delete */
-}
-
-.card button:hover {
-  opacity: 0.8;
-}
+    .card button:hover { opacity: 0.8; }
   </style>
 </head>
 
@@ -109,17 +94,17 @@ button:hover {
     <div class="students" id="studentsList"></div>
 
   </div>
+
 <script>
   const API = "/api/students";
 
-  let editId = null; // track editing student
+  let editId = null;
 
-  // Load students
   async function loadStudents() {
     const res = await fetch(API);
     const data = await res.json();
 
-    console.log("DATA:", data); 
+    console.log("DATA:", data);
 
     const list = document.getElementById("studentsList");
     list.innerHTML = "";
@@ -131,28 +116,25 @@ button:hover {
           Branch: ${s.branch}<br>
           Year: ${s.year}<br>
           
-          <button onclick="startEdit(${s.id}, '${s.name}', '${s.branch}', '${s.year}')">✏️ Edit</button>
+          <button onclick="startEdit(${s.id}, \`${s.name}\`, \`${s.branch}\`, \`${s.year}\`)">✏️ Edit</button>
           <button onclick="deleteStudent(${s.id})">❌ Delete</button>
         </div>
       `;
     });
   }
 
-  // Add OR Update student
   async function addStudent() {
     const name = document.getElementById("name").value;
     const branch = document.getElementById("branch").value;
     const year = document.getElementById("year").value;
 
     if (editId === null) {
-      // ADD
       await fetch(API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, branch, year })
       });
     } else {
-      // UPDATE
       await fetch(`${API}/${editId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -166,33 +148,26 @@ button:hover {
     loadStudents();
   }
 
-  // Start editing
   function startEdit(id, name, branch, year) {
     document.getElementById("name").value = name;
     document.getElementById("branch").value = branch;
     document.getElementById("year").value = year;
-
     editId = id;
   }
 
-  // Delete student
   async function deleteStudent(id) {
-    await fetch(`${API}/${id}`, {
-      method: "DELETE"
-    });
-
+    await fetch(`${API}/${id}`, { method: "DELETE" });
     loadStudents();
   }
 
-  // Clear form
   function clearForm() {
     document.getElementById("name").value = "";
     document.getElementById("branch").value = "";
     document.getElementById("year").value = "";
   }
 
-  // Load on start
   loadStudents();
 </script>
+
 </body>
 </html>

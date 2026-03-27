@@ -1,27 +1,27 @@
 const express = require("express");
 
 const app = express();
-const PORT = 3000;
 const path = require("path");
 
-app.use(express.static(path.join(__dirname, "public")));
+// ✅ FIXED PATH (important for Vercel)
+app.use(express.static(path.join(__dirname, "../public")));
+
 // Middleware
 app.use(express.json());
 
-// Dummy data (in-memory database)
+// Dummy data
 let students = [
   { id: 1, name: "Gabriel", branch: "Computer", year: "SE" },
   { id: 2, name: "Rahul", branch: "IT", year: "TE" }
 ];
 
-
 // 🔹 GET all students
-app.get("/students", (req, res) => {
+app.get("/api/students", (req, res) => {
   res.json(students);
 });
 
 // 🔹 GET student by ID
-app.get("/students/:id", (req, res) => {
+app.get("/api/students/:id", (req, res) => {
   const id = parseInt(req.params.id);
 
   const student = students.find(s => s.id === id);
@@ -34,7 +34,7 @@ app.get("/students/:id", (req, res) => {
 });
 
 // 🔹 POST add new student
-app.post("/students", (req, res) => {
+app.post("/api/students", (req, res) => {
   const { name, branch, year } = req.body;
 
   const newStudent = {
@@ -53,7 +53,7 @@ app.post("/students", (req, res) => {
 });
 
 // 🔹 PATCH update student
-app.patch("/students/:id", (req, res) => {
+app.patch("/api/students/:id", (req, res) => {
   const id = parseInt(req.params.id);
 
   const student = students.find(s => s.id === id);
@@ -75,7 +75,7 @@ app.patch("/students/:id", (req, res) => {
 });
 
 // 🔹 DELETE student
-app.delete("/students/:id", (req, res) => {
+app.delete("/api/students/:id", (req, res) => {
   const id = parseInt(req.params.id);
 
   const index = students.findIndex(s => s.id === id);
