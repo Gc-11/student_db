@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Manager</title>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      margin: 0;
+      padding: 0;
+      color: white;
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 30px;
+    }
+
+    .container {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      padding: 20px;
+      border-radius: 15px;
+      width: 400px;
+      margin: 30px auto;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    input {
+      display: block;
+      width: 90%;
+      margin: 10px auto;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+    }
+
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      background: #0077ff;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #005fcc;
+    }
+
+    .students {
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.2);
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 10px;
+    }
+    button {
+  margin-top: 8px;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+.card button {
+  background: #ff4d4d;
+}
+
+.card button:hover {
+  background: #cc0000;
+}
+.card button {
+  margin: 5px;
+}
+
+.card button:nth-child(4) {
+  background: #ffaa00; /* edit */
+}
+
+.card button:nth-child(5) {
+  background: #ff4d4d; /* delete */
+}
+
+.card button:hover {
+  opacity: 0.8;
+}
+  </style>
+</head>
+
+<body>
+
+  <h1>🎓 Student Manager</h1>
+
+  <div class="container">
+
+    <input id="name" placeholder="Name">
+    <input id="branch" placeholder="Branch">
+    <input id="year" placeholder="Year">
+
+    <button onclick="addStudent()">Add Student</button>
+
+    <div class="students" id="studentsList"></div>
+
+  </div>
+<script>
+  const API = "http://localhost:3000/students";
+
+  let editId = null; // track editing student
+
+  // Load students
+  async function loadStudents() {
+    const res = await fetch(API);
+    const data = await res.json();
+
+    const list = document.getElementById("studentsList");
+    list.innerHTML = "";
+
+    data.forEach(s => {
+      list.innerHTML += `
+        <div class="card">
+          <strong>${s.name}</strong><br>
+          Branch: ${s.branch}<br>
+          Year: ${s.year}<br>
+          
+          <button onclick="startEdit(${s.id}, '${s.name}', '${s.branch}', '${s.year}')">✏️ Edit</button>
+          <button onclick="deleteStudent(${s.id})">❌ Delete</button>
+        </div>
+      `;
+    });
+  }
+
+  // Add OR Update student
+  async function addStudent() {
+    const name = document.getElementById("name").value;
+    const branch = document.getElementById("branch").value;
+    const year = document.getElementById("year").value;
+
+    if (editId === null) {
+      // ADD
+      await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, branch, year })
+      });
+    } else {
+      // UPDATE
+      await fetch(`${API}/${editId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, branch, year })
+      });
+
+      editId = null;
+    }
+
+    clearForm();
+    loadStudents();
+  }
+
+  // Start editing
+  function startEdit(id, name, branch, year) {
+    document.getElementById("name").value = name;
+    document.getElementById("branch").value = branch;
+    document.getElementById("year").value = year;
+
+    editId = id;
+  }
+
+  // Delete student
+  async function deleteStudent(id) {
+    await fetch(`${API}/${id}`, {
+      method: "DELETE"
+    });
+
+    loadStudents();
+  }
+
+  // Clear form
+  function clearForm() {
+    document.getElementById("name").value = "";
+    document.getElementById("branch").value = "";
+    document.getElementById("year").value = "";
+  }
+
+  // Load on start
+  loadStudents();
+</script>
+</body>
+</html>
