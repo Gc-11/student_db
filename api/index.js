@@ -89,7 +89,4 @@ app.delete("/students/:id", (req, res) => {
   res.json({ message: "Student deleted successfully" });
 });
 
-// ================= START SERVER =================
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+module.exports = app;
